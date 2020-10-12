@@ -14,13 +14,21 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-    res.render('index', {
-        conta: req.cookies
-    });
+
+    let contas = [];
+
+    if('contas' in req.cookies){
+        contas = req.cookies.contas;
+    }
+
+    res.render('index', contas);
 });
 
 app.post('/calc', (req, res) => {
-    const { num1, num2, op } = req.body;
+    let { num1, num2, op } = req.body;
+
+    num1 = parseInt(num1);
+    num2 = parseInt(num2);
 
     let total = 0;
 
@@ -38,9 +46,17 @@ app.post('/calc', (req, res) => {
         total = num1 / num2;
     }
 
-    res.cookie('conta', {
+    let contas = [];
+
+    if('contas' in req.cookies){
+        contas = req.cookies.contas;
+    } 
+
+    contas.push({
         num1, num2, op, total
     });
+
+    res.cookie('contas', contas);
 
     res.redirect('/');
 });

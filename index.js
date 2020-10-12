@@ -14,7 +14,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('index', {
+        conta: req.cookies
+    });
 });
 
 app.post('/calc', (req, res) => {
@@ -24,7 +26,21 @@ app.post('/calc', (req, res) => {
 
     if(op === '+'){
 
+        total = num1 + num2;
+    }else if(op === '-'){
+
+        total = num1 - num2;
+    }else if(op === '*'){
+        
+        total = num1 * num2; 
+    }else if(op === '/'){
+
+        total = num1 / num2;
     }
+
+    res.cookie('conta', {
+        num1, num2, op, total
+    });
 
     res.redirect('/');
 });

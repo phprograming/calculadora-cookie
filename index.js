@@ -4,8 +4,17 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
+const session = require('express-session');
 
-app.use(cookieParser());
+//app.use(cookieParser());
+
+app.use(session({
+    secret: 'phdev',
+    cookie:{
+        maxAge: 10*60*1000
+    }
+}));
+
 app.use(bodyParser.urlencoded({ 
     extended: true 
 }));
@@ -17,11 +26,15 @@ app.get('/', (req, res) => {
 
     let contas = [];
 
-    if('contas' in req.cookies){
+    /*if('contas' in req.cookies){
         contas = req.cookies.contas;
+    }*/
+
+    if('contas' in req.session){
+        contas = req.session.contas;
     }
 
-    res.render('index', contas);
+    res.render('index', {contas});
 });
 
 app.post('/calc', (req, res) => {
@@ -48,15 +61,20 @@ app.post('/calc', (req, res) => {
 
     let contas = [];
 
-    if('contas' in req.cookies){
+    /*if('contas' in req.cookies){
         contas = req.cookies.contas;
-    } 
+    }*/ 
+
+    if('contas' in req.session){
+        contas = req.session.contas;
+    }
 
     contas.push({
         num1, num2, op, total
     });
 
-    res.cookie('contas', contas);
+    //res.cookie('contas', contas);
+    req.session.contas = contas;
 
     res.redirect('/');
 });
